@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculateur de Position</title>
+  <style>
+    :root {
+      --green: #00ffae;
+      --red: #ff4d4d;
+      --dark: #0e0e16;
+      --panel: #1e1e2f;
+      --input: #2a2a40;
+      --text: #f1f1f1;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: var(--dark);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      background-color: var(--panel);
+      box-shadow: 0 0 10px #000;
+    }
+
+    header h1 {
+      color: var(--green);
+      margin: 0;
+      font-size: 1.8em;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background-color: var(--panel);
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      background-color: #2a2a40;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+    }
+
+    .tab-button.active {
+      background-color: var(--green);
+      color: #000;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 20px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: none;
+      background-color: var(--input);
+      color: white;
+      font-size: 1em;
+    }
+
+    input:focus {
+      outline: 2px solid var(--green);
+    }
+
+    .sub-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .sub-buttons button {
+      flex: 1;
+      padding: 12px;
+      font-weight: bold;
+      background-color: #444;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .sub-buttons button.active {
+      background-color: var(--green);
+      color: #000;
+    }
+
+    .btn {
+      margin-top: 20px;
+      padding: 14px;
+      background-color: var(--green);
+      color: #000;
+      border: none;
+      font-weight: bold;
+      border-radius: 6px;
+      font-size: 1.1em;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s ease-in-out;
+    }
+
+    .btn:hover {
+      background-color: #00e19a;
+    }
+
+    .result {
+      margin-top: 20px;
+      background: #202033;
+      padding: 20px;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .tab-button {
+        font-size: 0.9em;
+      }
+
+      header h1 {
+        font-size: 1.4em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ TICKER TRADINGVIEW -->
+  <div class="tradingview-widget-container">
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+    {
+      "symbols": [
+        { "proName": "OANDA:XAUUSD", "title": "XAUUSD" },
+        { "proName": "BITSTAMP:BTCUSD", "title": "BTCUSD" },
+        { "proName": "TVC:DXY", "title": "DXY" },
+        { "proName": "OANDA:US30USD", "title": "US30" },
+        { "proName": "OANDA:NAS100USD", "title": "US100" },
+        { "proName": "CBOE:VIX", "title": "VIX" }
+      ],
+      "showSymbolLogo": true,
+      "colorTheme": "dark",
+      "isTransparent": false,
+      "displayMode": "adaptive",
+      "locale": "fr"
+    }
+    </script>
+  </div>
+
+  <header>
+    <h1>📈 Calculateur de Taille de Position</h1>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-button active" onclick="showTab('wegetfunded')">WeGetFunded</button>
+    <button class="tab-button" onclick="showTab('mt4')">MT4 / MT5</button>
+  </div>
+
+  <div id="wegetfunded" class="tab-content active">
+    <div class="form-group">
+      <label for="wgf-loss">Perte par trade (€)</label>
+      <input type="number" inputmode="decimal" pattern="\d*" id="wgf-loss" placeholder="Ex: 50">
+    </div>
+
+    <div class="form-group">
+      <label for="wgf-sl">Stop Loss (points)</label>
+      <input type="number" inputmode="decimal" pattern="\d*" id="wgf-sl" placeholder="Ex: 25">
+    </div>
+
+    <button class="btn" onclick="calculerWeGetFunded()">Calculer</button>
+    <div class="result" id="result-wgf"></div>
+  </div>
+
+  <div id="mt4" class="tab-content">
+    <div class="form-group">
+      <label for="mt4-loss">Perte par trade (€)</label>
+      <input type="number" inputmode="decimal" pattern="\d*" id="mt4-loss" placeholder="Ex: 50">
+    </div>
+
+    <div class="form-group">
+      <label for="mt4-sl">Stop Loss (points)</label>
+      <input type="number" inputmode="decimal" pattern="\d*" id="mt4-sl" placeholder="Ex: 25">
+    </div>
+
+    <div class="sub-buttons">
+      <button id="btn-xau" class="active" onclick="setInstrument('xau')">XAUUSD</button>
+      <button id="btn-btc" onclick="setInstrument('btc')">BTCUSD</button>
+    </div>
+
+    <button class="btn" onclick="calculerMT4()">Calculer</button>
+    <div class="result" id="result-mt4"></div>
+  </div>
+
+  <script>
+    let instrument = 'xau';
+
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+
+      const index = tabId === 'wegetfunded' ? 0 : 1;
+      document.querySelectorAll('.tab-button')[index].classList.add('active');
+    }
+
+    function calculerWeGetFunded() {
+      const loss = parseFloat(document.getElementById("wgf-loss").value);
+      const sl = parseFloat(document.getElementById("wgf-sl").value);
+
+      if (isNaN(loss) || isNaN(sl) || loss <= 0 || sl <= 0) {
+        document.getElementById("result-wgf").innerText = "Merci de remplir les deux champs correctement.";
+        return;
+      }
+
+      const result = Math.ceil((loss / sl) * 10 / 10) * 10;
+      document.getElementById("result-wgf").innerText = `📌 Résultat : ${result} unités`;
+    }
+
+    function setInstrument(type) {
+      instrument = type;
+      document.getElementById("btn-xau").classList.remove("active");
+      document.getElementById("btn-btc").classList.remove("active");
+      document.getElementById("btn-" + type).classList.add("active");
+    }
+
+    function calculerMT4() {
+      const loss = parseFloat(document.getElementById("mt4-loss").value);
+      const sl = parseFloat(document.getElementById("mt4-sl").value);
+
+      if (isNaN(loss) || isNaN(sl) || loss <= 0 || sl <= 0) {
+        document.getElementById("result-mt4").innerText = "Merci de remplir les deux champs correctement.";
+        return;
+      }
+
+      let result;
+      if (instrument === 'xau') {
+        result = (loss / sl) / 90;
+      } else {
+        result = ((loss / sl) / 90) * 100;
+      }
+
+      document.getElementById("result-mt4").innerText = `📌 Résultat : ${result.toFixed(2)} lots`;
+    }
+  </script>
+</body>
+</html>
