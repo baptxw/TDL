@@ -269,21 +269,19 @@
     }
   </script>
 </body>
-  <!-- Calendrier économique (Investing.com) -->
-<div class="tradingview-widget-container" style="margin: 40px 0;">
-  <h2 style="text-align:center; color: var(--green);">📅 Calendrier Économique</h2>
-  <div id="economicCalendarWidget"></div>
-  <script type="text/javascript" src="https://www.investing.com/js/widgets/ecalendar.js"></script>
-  <script type="text/javascript">
-    new invwidget({
-      type: 'ecalendar',
-      width: '100%',
-      height: '600',
-      locale: 'fr',
-      theme: 'dark',
-      countries: ['5', '72', '4', '35', '6', '22'], // USA, France, Allemagne, UK, Canada, Zone euro
-      importance: ['1','2','3']
-    });
+  <!-- Calendrier économique TradingView -->
+<div class="tradingview-widget-container">
+  <div class="tradingview-widget-container__widget"></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+  {
+    "width": "100%",
+    "height": "600",
+    "locale": "fr",
+    "importanceFilter": "-1,0,1",
+    "currencyFilter": ["EUR", "USD", "GBP", "CAD"],
+    "colorTheme": "dark",
+    "isTransparent": false
+  }
   </script>
 </div>
 </html>
